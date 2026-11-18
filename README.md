@@ -12,7 +12,7 @@ La scacchiera parte **nascosta**: l'obiettivo è allenare la memoria e il calcol
 - **Mosse accettate** (parlate o scritte):
   - coordinate: `e2 e4`, `e2e4`
   - pezzi: `cavallo f3`, `knight f3`, `Cf3`, `Nf3`
-  - forma generale `<lettera del pezzo><casella>`: `kf3`, `cf3`, `sf3`, `nf3` (cavallo), `ah5` (alfiere), `dh5` (regina), `ta1` (torre), `re1` (re). È una regola del parser, non un comando speciale: vengono accettate le iniziali italiane, inglesi e internazionali.
+  - notazione algebrica standard SAN (la più usata, FIDE): `Nf3` (cavallo/knight), `Bc4` (alfiere), `Rd1` (torre), `Qh5` (regina), `Ke1` (re). Sono accettati anche gli equivalenti italiani `Cf3`, `Ac4`, `Td1`, `Dh5`, `Re1` e i nomi per esteso. `K` indica sempre il re, mai il cavallo.
   - con origine: `cavallo da g1 a f3`, `knight g1 f3`
   - catture: `cavallo prende f5`, `knight takes f5`, `Cxf5`
   - arrocco: `arrocca corto`, `arrocca lungo`, `castle short`, `O-O`, `O-O-O`
@@ -80,7 +80,7 @@ Una volta pubblicato il link HTTPS (Cloudflare Pages o GitHub Pages):
 
 Le grafiche sono in `assets/`: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` e `cover.png` (1200×630).
 
-> Note: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript. Se modifichi i file dell'app, aggiorna `CACHE_NAME` in `sw.js` (per es. da `blindchess-v3` a `blindchess-v4`): altrimenti chi ha già installato la PWA continua a vedere la vecchia versione.
+> Note: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript. Se modifichi i file dell'app, aggiorna `CACHE_NAME` in `sw.js` (per es. da `blindchess-v4` a `blindchess-v5`): altrimenti chi ha già installato la PWA continua a vedere la vecchia versione.
 
 ## Pubblicazione su GitHub + Cloudflare Pages
 

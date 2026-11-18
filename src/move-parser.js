@@ -17,16 +17,17 @@ const PIECE_NAME = {
   en: { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' },
 };
 
-// Iniziali dei pezzi nelle principali notazioni. Il parser accetta sempre la
-// forma "<lettera><casella>" (kf3, Cf3, Nf3, sf3, dh5, ta1, ...): non ci sono
-// comandi speciali, è una regola generale applicata a ogni mossa legale.
+// Notazione algebrica standard (SAN, FIDE): N B R Q K, pedone senza lettera.
+// Accettiamo anche gli equivalenti italiani (C A T D R), molto usati nelle
+// scuole di scacchi. La forma compatta "<lettera><casella>" resta generale:
+// Nf3, Cf3, Ac4, Td1, Dh5, Re1, e4, ecc.
 const PIECE_LETTERS = {
   p: ['p'],
-  n: ['n', 'c', 'k', 's'], // knight / cavallo / knight / Springer
-  b: ['b', 'a', 'f'],     // bishop / alfiere / fou
-  r: ['r', 't'],          // rook / torre
-  q: ['q', 'd'],          // queen / donna
-  k: ['k', 'r'],          // king / re
+  n: ['n', 'c'], // knight / cavallo
+  b: ['b', 'a'], // bishop / alfiere
+  r: ['r', 't'], // rook / torre
+  q: ['q', 'd'], // queen / donna
+  k: ['k', 'r'], // king / re
 };
 
 const CAPTURE_WORDS = ['', 'x', 'prende', 'mangia', 'cattura', 'takes', 'capture'];

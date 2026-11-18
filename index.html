@@ -212,7 +212,7 @@
         <button id="gameMicBtn" class="btn btn--mic" type="button">🎤 Parla la mossa</button>
         <form id="gameMoveForm" class="move-form">
           <input id="gameMoveInput" type="text" autocomplete="off" spellcheck="false"
-                 placeholder="es. e2 e4 · kf3 · arrocca corto" aria-label="Scrivi la tua mossa" />
+                 placeholder="es. e2 e4 · Nf3 · arrocca corto" aria-label="Scrivi la tua mossa" />
           <button class="btn" type="submit">Invia</button>
         </form>
 
@@ -245,14 +245,14 @@
         <thead><tr><th>Pezzo</th><th>Italiano</th><th>Inglese</th><th>Esempio</th></tr></thead>
         <tbody>
           <tr><td>Pedone</td><td>nessuna lettera</td><td>nessuna lettera</td><td><code>e4</code></td></tr>
-          <tr><td>Cavallo</td><td><code>C</code></td><td><code>N</code> — accettiamo anche <strong>k</strong></td><td><code>Cf3</code>, <code>Nf3</code>, <code>kf3</code></td></tr>
+          <tr><td>Cavallo</td><td><code>C</code></td><td><code>N</code> (SAN internazionale)</td><td><code>Nf3</code>, <code>Cf3</code></td></tr>
           <tr><td>Alfiere</td><td><code>A</code></td><td><code>B</code></td><td><code>Ac4</code>, <code>Bc4</code></td></tr>
           <tr><td>Torre</td><td><code>T</code></td><td><code>R</code></td><td><code>Ta1</code>, <code>Ra1</code></td></tr>
           <tr><td>Regina / Donna</td><td><code>D</code></td><td><code>Q</code></td><td><code>Dh5</code>, <code>Qh5</code></td></tr>
           <tr><td>Re</td><td><code>R</code></td><td><code>K</code></td><td><code>Re1</code>, <code>Ke1</code></td></tr>
         </tbody>
       </table>
-      <p class="manual-note"><strong>k</strong> è una scorciatoia per <em>knight</em> (cavallo), non per il re: <code>kf3</code> porta il cavallo in f3. Se anche il re potesse andare in f3, l'app ti chiederà di precisare il pezzo o la casella di partenza.</p>
+      <p class="manual-note">La notazione più usata è la <strong>SAN internazionale</strong>: <code>N</code> viene da <em>knight</em> (cavallo) e <code>K</code> da <em>king</em> (re). Quindi <code>Nf3</code> = cavallo in f3, mentre <code>Kf3</code> = re in f3 (solo se legale). In italiano si scrive <code>Cf3</code>: entrambe le forme sono accettate.</p>
 
       <h3>Catturare</h3>
       <p>Si usa <code>x</code> oppure le parole <em>prende</em> / <em>takes</em>: <code>Cxe5</code>, <code>cavallo prende e5</code>, <code>knight takes e5</code>.</p>
@@ -267,7 +267,7 @@
       <p>Aggiungi la casella di partenza o solo la lettera della colonna: <code>cavallo da b1 a c3</code>, <code>Cb1c3</code>, <code>Cbc3</code>, <code>knight b1 f3</code>.</p>
 
       <h3>Allo specchio / a voce</h3>
-      <p>Puoi parlare in italiano o in inglese: <em>«e2 e4»</em>, <em>«cavallo f3»</em>, <em>«knight f3»</em>, <em>«k f3»</em>, <em>«arrocca corto»</em>. I segni <code>+</code> (scacco) e <code>#</code> (matto) sono opzionali.</p>
+      <p>Puoi parlare in italiano o in inglese: <em>«e2 e4»</em>, <em>«cavallo f3»</em>, <em>«knight f3»</em>, <em>«Nf3»</em>, <em>«arrocca corto»</em>. I segni <code>+</code> (scacco) e <code>#</code> (matto) sono opzionali.</p>
     </div>
   </dialog>
 
