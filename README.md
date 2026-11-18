@@ -80,7 +80,7 @@ Una volta pubblicato il link HTTPS (Cloudflare Pages o GitHub Pages):
 
 Le grafiche sono in `assets/`: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` e `cover.png` (1200×630).
 
-> Note: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript. Se modifichi i file dell'app, aggiorna `CACHE_NAME` in `sw.js` (per es. da `blindchess-v4` a `blindchess-v5`): altrimenti chi ha già installato la PWA continua a vedere la vecchia versione.
+> Note: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript. Se modifichi i file dell'app, aggiorna `CACHE_NAME` in `sw.js` (per es. da `blindchess-v5` a `blindchess-v6`): altrimenti chi ha già installato la PWA continua a vedere la vecchia versione.
 
 ## Pubblicazione su GitHub + Cloudflare Pages
 

@@ -89,7 +89,13 @@
         </div>
 
         <div id="boardWrap" class="board-wrap">
-          <div id="board" class="board" role="grid" aria-label="Scacchiera"></div>
+          <div class="board-frame">
+            <div id="filesTop" class="board-coords board-coords--top" aria-hidden="true"></div>
+            <div id="ranksLeft" class="board-coords board-coords--left" aria-hidden="true"></div>
+            <div id="board" class="board" role="grid" aria-label="Scacchiera"></div>
+            <div id="ranksRight" class="board-coords board-coords--right" aria-hidden="true"></div>
+            <div id="filesBottom" class="board-coords board-coords--bottom" aria-hidden="true"></div>
+          </div>
           <div id="boardVeil" class="board-veil">
             <span class="board-veil__icon" aria-hidden="true">🙈</span>
             <strong>Scacchiera nascosta</strong>
