@@ -541,8 +541,8 @@ function downloadPgn() {
   }
 
   const pgn = [
-    '[Event "Allenamento scacchi bendato"]',
-    '[Site "Scacchi Bendato"]',
+    '[Event "Allenamento BlindChess"]',
+    '[Site "BlindChess"]',
     `[Date "${date}"]`,
     '[Round "?"]',
     `[White "${white}"]`,
@@ -557,7 +557,7 @@ function downloadPgn() {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `scacchi-bendato-${date.replace(/\./g, '-')}.pgn`;
+  link.download = `blindchess-${date.replace(/\./g, '-')}.pgn`;
   document.body.appendChild(link);
   link.click();
   link.remove();

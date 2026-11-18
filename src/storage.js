@@ -1,7 +1,7 @@
 // Preferenze e statistiche salvate nel browser (localStorage).
 
-const SETTINGS_KEY = 'scacchi-bendato:settings:v1';
-const STATS_KEY = 'scacchi-bendato:stats:v1';
+const SETTINGS_KEY = 'blindchess:settings:v1';
+const STATS_KEY = 'blindchess:stats:v1';
 
 export const DEFAULT_SETTINGS = {
   elo: 800,

@@ -1,4 +1,4 @@
-# ♞ Scacchi Bendato
+# ♞ BlindChess
 
 Un'app web per imparare a giocare a scacchi **senza guardare la scacchiera**. Giochi contro un bot (Stockfish 17.1 in WebAssembly) con livello ELO selezionabile, detti la tua mossa **a voce** oppure la scrivi / clicchi, e il bot ti risponde **per iscritto e a voce**.
 
@@ -66,15 +66,12 @@ Consigli: usa **Chrome** o **Edge** per il riconoscimento vocale (Web Speech API
 
 ## Pubblicazione su GitHub + Cloudflare Pages
 
-1. Crea una repository su GitHub (anche vuota).
-2. Carica il contenuto di questa cartella:
+1. Crea su GitHub una repository vuota, ad esempio `BlindChess` (senza aggiungere README o LICENSE, così non ci sono conflitti).
+2. Questa cartella è **già un repository Git con i commit pronti**. Dalla cartella del progetto esegui:
 
    ```bash
-   git init
-   git add .
-   git commit -m "Prima versione di Scacchi Bendato"
+   git remote add origin https://github.com/TUO-UTENTE/BlindChess.git
    git branch -M main
-   git remote add origin https://github.com/TUO-UTENTE/NOME-REPO.git
    git push -u origin main
    ```
 
