@@ -72,6 +72,56 @@ body {
 .topbar__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
 .btn--install { white-space: nowrap; padding: 8px 12px; font-size: .82rem; background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
 .btn--install:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.btn--top { width: auto; white-space: nowrap; padding: 7px 10px; font-size: .78rem; }
+
+/* ===== Modalità partita (solo scacchiera, tempo e comandi) ===== */
+body.game-mode .setup,
+body.game-mode .side,
+body.game-mode .footer,
+body.game-mode .brand,
+body.game-mode .board-hint,
+body.game-mode .shortcuts,
+body.game-mode #engineStatus,
+body.game-mode #themeBtn,
+body.game-mode #installBtn,
+body.game-mode #gameModeBtn { display: none !important; }
+body.game-mode .topbar { justify-content: flex-end; padding-bottom: 12px; margin-bottom: 14px; }
+body.game-mode .layout { grid-template-columns: minmax(280px, 560px); justify-content: center; }
+body.game-mode .board-panel { width: 100%; }
+.game-panel { display: none; }
+body.game-mode #gamePanel:not([hidden]) {
+  display: grid; gap: 10px; width: 100%;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px;
+}
+.game-panel__clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.game-panel__actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.game-bot-move { margin: 0; min-height: 1.4em; font-size: .95rem; font-weight: 600; color: var(--accent); }
+
+/* ===== Manuale della notazione ===== */
+.manual-dialog {
+  width: min(760px, 94vw); max-height: 86vh; padding: 0;
+  border: 1px solid var(--border); border-radius: 16px;
+  background: var(--surface); color: var(--text); box-shadow: 0 24px 70px rgba(0,0,0,.35);
+}
+.manual-dialog::backdrop { background: rgba(5, 12, 18, .65); backdrop-filter: blur(3px); }
+.manual-dialog__head {
+  position: sticky; top: 0; z-index: 1;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--surface);
+}
+.manual-dialog__head h2 { margin: 0; font-size: 1.15rem; }
+.manual-dialog__body { padding: 14px 20px 24px; overflow: auto; font-size: .9rem; }
+.manual-dialog__body h3 { margin: 20px 0 6px; font-size: .95rem; color: var(--accent); }
+.manual-dialog__body p { margin: 6px 0; }
+.manual-dialog__body code {
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px;
+  padding: 1px 5px; font: 600 .85em ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+.manual-note { color: var(--warn); }
+.manual-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: .85rem; }
+.manual-table th, .manual-table td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--border); }
+.manual-table th { color: var(--muted); font-size: .75rem; text-transform: uppercase; }
 
 .badge {
   font-size: 0.78rem; font-weight: 600; padding: 6px 11px; border-radius: 999px;

@@ -12,6 +12,7 @@ La scacchiera parte **nascosta**: l'obiettivo è allenare la memoria e il calcol
 - **Mosse accettate** (parlate o scritte):
   - coordinate: `e2 e4`, `e2e4`
   - pezzi: `cavallo f3`, `knight f3`, `Cf3`, `Nf3`
+  - forma generale `<lettera del pezzo><casella>`: `kf3`, `cf3`, `sf3`, `nf3` (cavallo), `ah5` (alfiere), `dh5` (regina), `ta1` (torre), `re1` (re). È una regola del parser, non un comando speciale: vengono accettate le iniziali italiane, inglesi e internazionali.
   - con origine: `cavallo da g1 a f3`, `knight g1 f3`
   - catture: `cavallo prende f5`, `knight takes f5`, `Cxf5`
   - arrocco: `arrocca corto`, `arrocca lungo`, `castle short`, `O-O`, `O-O-O`
@@ -19,11 +20,13 @@ La scacchiera parte **nascosta**: l'obiettivo è allenare la memoria e il calcol
   - se una mossa è ambigua, l'app ti chiede di indicare la casella di partenza.
 - **Bot a voce**: la mossa del bot viene mostrata e pronunciata in italiano, ad es. *«Il bot gioca Cavallo prende f3, scacco.»*
 - **Scacchiera**: nascosta di default; pulsanti separati per mostrare la scacchiera e per mostrare i pezzi.
+- **Modalità partita** (`G`): vista minimal con solo scacchiera (se visibile), tempo e comandi (voce, testo, pausa, abbandono, manuale). Si esce con **✖ Esci**.
+- **Manuale della notazione** (`?` o **📖 Manuale**): spiegazione di caselle, lettere dei pezzi, catture, arrocco, promozioni e disambiguazione.
 - **Pausa e abbandono**: con **Pausa** (o `Spazio`) il cronometro si ferma, la scacchiera viene forzatamente nascosta e ogni azione è bloccata finché non riprendi; se il bot stava pensando, la sua mossa viene annullata e ricalcolata alla ripresa. Con **Abbandona** (o `X`) cedi la partita dopo un doppio clic di conferma; il risultato PGN viene registrato come vittoria del bot.
 - **PWA installabile**: icona, splash, modalità standalone e funzionamento offline (service worker). Su mobile compare il pulsante **📲 Installa app**; su iPhone/iPad fornisce le istruzioni per "Aggiungi a schermata Home".
 - **Copertina del link**: immagine Open Graph / Twitter Card (`assets/cover.png`) per l'anteprima nei social e nelle chat.
 - **Extra**: annulla mossa, suggerimento (motore a forza piena), storico, cronometro (anche con tempo limite), conferma vocale della tua mossa, download PGN, tema scuro, statistiche salvate nel browser.
-- **Scorciatoie**: `M` microfono · `U` annulla · `H` suggerimento · `B` scacchiera · `P` pezzi · `N` nuova partita · `Spazio` pausa/riprendi · `X` abbandona · `Esc` deseleziona · `Invio` invia la mossa scritta.
+- **Scorciatoie**: `M` microfono · `U` annulla · `H` suggerimento · `B` scacchiera · `P` pezzi · `N` nuova partita · `Spazio` pausa/riprendi · `X` abbandona · `G` modalità partita · `?` manuale · `Esc` deseleziona · `Invio` invia la mossa scritta.
 
 ## Struttura
 
@@ -77,7 +80,7 @@ Una volta pubblicato il link HTTPS (Cloudflare Pages o GitHub Pages):
 
 Le grafiche sono in `assets/`: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` e `cover.png` (1200×630).
 
-> Note: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript. Se modifichi i file dell'app, aggiorna `CACHE_NAME` in `sw.js` (per es. da `blindchess-v2` a `blindchess-v3`): altrimenti chi ha già installato la PWA continua a vedere la vecchia versione.
+> Note: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript. Se modifichi i file dell'app, aggiorna `CACHE_NAME` in `sw.js` (per es. da `blindchess-v3` a `blindchess-v4`): altrimenti chi ha già installato la PWA continua a vedere la vecchia versione.
 
 ## Pubblicazione su GitHub + Cloudflare Pages
 

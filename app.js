@@ -11,6 +11,27 @@ const $ = (id) => document.getElementById(id);
 const el = {
   engineStatus: $('engineStatus'),
   installBtn: $('installBtn'),
+  manualBtn: $('manualBtn'),
+  helpManualBtn: $('helpManualBtn'),
+  manualDialog: $('manualDialog'),
+  closeManualBtn: $('closeManualBtn'),
+  gameModeBtn: $('gameModeBtn'),
+  exitGameBtn: $('exitGameBtn'),
+  gamePanel: $('gamePanel'),
+  gameClockPlayer: $('gameClockPlayer'),
+  gameClockBot: $('gameClockBot'),
+  gameClockPlayerLabel: $('gameClockPlayerLabel'),
+  gameClockBotLabel: $('gameClockBotLabel'),
+  gameClockPlayerBox: $('gameClockPlayerBox'),
+  gameClockBotBox: $('gameClockBotBox'),
+  gameStatus: $('gameStatus'),
+  gameBotMove: $('gameBotMove'),
+  gameMicBtn: $('gameMicBtn'),
+  gameMoveForm: $('gameMoveForm'),
+  gameMoveInput: $('gameMoveInput'),
+  gamePauseBtn: $('gamePauseBtn'),
+  gameResignBtn: $('gameResignBtn'),
+  gameManualBtn: $('gameManualBtn'),
   themeBtn: $('themeBtn'),
   eloRange: $('eloRange'),
   eloValue: $('eloValue'),
@@ -182,6 +203,27 @@ function renderStats() {
   }
 }
 
+function syncGamePanel() {
+  el.gameClockPlayer.textContent = el.clockPlayer.textContent;
+  el.gameClockBot.textContent = el.clockBot.textContent;
+  el.gameClockPlayerLabel.textContent = playerName();
+  el.gameClockBotLabel.textContent = botName();
+  el.gameClockPlayerBox.className = el.clockPlayer.parentElement.className;
+  el.gameClockBotBox.className = el.clockBot.parentElement.className;
+  el.gameStatus.textContent = el.turnStatus.textContent;
+  el.gameStatus.className = el.turnStatus.className;
+  el.gameBotMove.textContent = botSan
+    ? `Ultima mossa del bot: ${botSan} — ${botPhrase}`
+    : 'Ultima mossa del bot: —';
+  el.gameMicBtn.disabled = el.micBtn.disabled;
+  el.gamePauseBtn.disabled = el.pauseBtn.disabled;
+  el.gamePauseBtn.innerHTML = el.pauseBtn.innerHTML;
+  el.gamePauseBtn.classList.toggle('btn--paused', paused);
+  el.gamePauseBtn.setAttribute('aria-pressed', String(paused));
+  el.gameResignBtn.disabled = el.resignBtn.disabled;
+  el.gameResignBtn.innerHTML = el.resignBtn.innerHTML;
+}
+
 function render() {
   const boardVisible = settings.showBoard && !paused;
   board.render({
@@ -241,6 +283,7 @@ function render() {
   renderHistory();
   renderClocks();
   renderStats();
+  syncGamePanel();
 }
 
 /* ------------------------------ Flusso di gioco ------------------------------ */
@@ -442,7 +485,9 @@ function onSquareClick(square) {
 function resetResign() {
   resignPending = false;
   window.clearTimeout(resignTimer);
-  el.resignBtn.innerHTML = '🏳 Abbandona <span class="key">x</span>';
+  const label = '🏳 Abbandona <span class="key">x</span>';
+  el.resignBtn.innerHTML = label;
+  el.gameResignBtn.innerHTML = label;
 }
 
 function togglePause() {
@@ -481,6 +526,7 @@ function resign() {
   if (!resignPending) {
     resignPending = true;
     el.resignBtn.textContent = '⚠ Conferma abbandono';
+    el.gameResignBtn.textContent = '⚠ Conferma abbandono';
     toast('Clicca di nuovo per confermare l’abbandono.');
     resignTimer = window.setTimeout(resetResign, 5000);
     return;
@@ -679,6 +725,25 @@ function applySettingsToUI() {
   el.voiceLangSelect.value = settings.voiceLang;
   el.continuousChk.checked = !!settings.continuous;
   el.confirmChk.checked = !!settings.speakUserMove;
+
+  document.body.classList.toggle('game-mode', !!settings.gameMode);
+  el.gamePanel.hidden = !settings.gameMode;
+  el.exitGameBtn.hidden = !settings.gameMode;
+  el.gameModeBtn.setAttribute('aria-pressed', String(!!settings.gameMode));
+}
+
+function toggleGameMode() {
+  settings.gameMode = !settings.gameMode;
+  saveSettings(settings);
+  applySettingsToUI();
+  render();
+  toast(settings.gameMode
+    ? 'Modalità partita: solo scacchiera, tempo e comandi.'
+    : 'Modalità completa attivata.');
+}
+
+function openManual() {
+  if (typeof el.manualDialog.showModal === 'function') el.manualDialog.showModal();
 }
 
 /* ------------------------------ PWA / installazione ------------------------------ */
@@ -764,8 +829,11 @@ function init() {
     }
   };
   voice.onState = (listening) => {
-    el.micBtn.classList.toggle('is-listening', listening);
-    el.micBtn.textContent = listening ? '🎙️ Ascolto… (clicca per fermare)' : '🎤 Parla la mossa';
+    const label = listening ? '🎙️ Ascolto… (clicca per fermare)' : '🎤 Parla la mossa';
+    for (const button of [el.micBtn, el.gameMicBtn]) {
+      button.classList.toggle('is-listening', listening);
+      button.textContent = label;
+    }
   };
 
   engine = new Engine(onEngineStatus);
@@ -842,6 +910,25 @@ function init() {
   el.pauseBtn.addEventListener('click', togglePause);
   el.resignBtn.addEventListener('click', resign);
   el.pgnBtn.addEventListener('click', downloadPgn);
+
+  el.gameModeBtn.addEventListener('click', toggleGameMode);
+  el.exitGameBtn.addEventListener('click', toggleGameMode);
+  el.manualBtn.addEventListener('click', openManual);
+  el.helpManualBtn.addEventListener('click', openManual);
+  el.gameManualBtn.addEventListener('click', openManual);
+  el.closeManualBtn.addEventListener('click', () => el.manualDialog.close());
+  el.manualDialog.addEventListener('click', (event) => {
+    if (event.target === el.manualDialog) el.manualDialog.close();
+  });
+
+  el.gameMicBtn.addEventListener('click', () => voice.toggle());
+  el.gameMoveForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    handleMoveInput(el.gameMoveInput.value);
+    el.gameMoveInput.value = '';
+  });
+  el.gamePauseBtn.addEventListener('click', togglePause);
+  el.gameResignBtn.addEventListener('click', resign);
   el.resetStatsBtn.addEventListener('click', () => {
     stats = { games: 0, wins: 0, draws: 0, losses: 0 };
     saveStats(stats);
@@ -852,9 +939,14 @@ function init() {
   document.addEventListener('keydown', (event) => {
     const target = event.target;
     if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
-      if (event.key === 'Enter' && target === el.moveInput) {
-        event.preventDefault();
-        el.moveForm.requestSubmit();
+      if (event.key === 'Enter') {
+        if (target === el.moveInput) {
+          event.preventDefault();
+          el.moveForm.requestSubmit();
+        } else if (target === el.gameMoveInput) {
+          event.preventDefault();
+          el.gameMoveForm.requestSubmit();
+        }
       }
       return;
     }
@@ -872,6 +964,8 @@ function init() {
     else if (key === 'b') { event.preventDefault(); el.boardToggle.click(); }
     else if (key === 'p') { event.preventDefault(); el.piecesToggle.click(); }
     else if (key === 'n') { event.preventDefault(); newGame(); }
+    else if (key === 'g') { event.preventDefault(); toggleGameMode(); }
+    else if (event.key === '?') { event.preventDefault(); openManual(); }
     else if (key === 'escape') { selected = null; targets = []; render(); }
   });
 
@@ -896,6 +990,7 @@ function clockTick() {
     elapsed[side] += delta;
   }
   renderClocks();
+  syncGamePanel();
 }
 
 init();

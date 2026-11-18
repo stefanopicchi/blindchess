@@ -40,6 +40,9 @@
       </div>
       <div class="topbar__actions">
         <button id="installBtn" class="btn btn--install" type="button" hidden>📲 Installa app</button>
+        <button id="manualBtn" class="btn btn--small btn--top" type="button" title="Manuale della notazione (?)">📖 Manuale</button>
+        <button id="gameModeBtn" class="btn btn--small btn--top" type="button" aria-pressed="false" title="Modalità partita (g)">🎯 Modalità partita</button>
+        <button id="exitGameBtn" class="btn btn--small btn--top" type="button" hidden>✖ Esci</button>
         <span id="engineStatus" class="badge badge--loading" role="status">Caricamento motore…</span>
         <button id="themeBtn" class="icon-btn" type="button" title="Cambia tema (tasto t)" aria-label="Cambia tema">🌙</button>
       </div>
@@ -104,6 +107,8 @@
           <span><kbd>N</kbd> nuova partita</span>
           <span><kbd>Spazio</kbd> pausa</span>
           <span><kbd>X</kbd> abbandona</span>
+          <span><kbd>G</kbd> modalità partita</span>
+          <span><kbd>?</kbd> manuale</span>
           <span><kbd>Invio</kbd> invia mossa</span>
         </div>
       </section>
@@ -173,6 +178,7 @@
             <summary>Come funziona / comandi vocali</summary>
             <div class="help-body">
               <p>Sei sempre <strong>di bianco</strong> per impostazione predefinita (puoi cambiare colore). Il bot risponde a voce e per iscritto. La scacchiera parte nascosta: allenati a ricordare la posizione!</p>
+              <button id="helpManualBtn" class="link-btn" type="button">📖 Apri il manuale della notazione</button>
               <ul>
                 <li>Coordinate: <em>«e2 e4»</em>, <em>«e2e4»</em></li>
                 <li>Nome del pezzo: <em>«cavallo f3»</em>, <em>«knight f3»</em></li>
@@ -187,12 +193,83 @@
           </details>
         </section>
       </aside>
+
+      <section id="gamePanel" class="game-panel" hidden aria-label="Modalità partita">
+        <div class="game-panel__clocks">
+          <div class="clock" id="gameClockPlayerBox">
+            <span class="clock__label">Tu (<span id="gameClockPlayerLabel">Bianco</span>)</span>
+            <strong id="gameClockPlayer">00:00</strong>
+          </div>
+          <div class="clock" id="gameClockBotBox">
+            <span class="clock__label">Bot (<span id="gameClockBotLabel">Nero</span>)</span>
+            <strong id="gameClockBot">00:00</strong>
+          </div>
+        </div>
+
+        <p id="gameStatus" class="status" aria-live="polite">Pronto per iniziare.</p>
+        <p id="gameBotMove" class="game-bot-move" aria-live="polite">Ultima mossa del bot: —</p>
+
+        <button id="gameMicBtn" class="btn btn--mic" type="button">🎤 Parla la mossa</button>
+        <form id="gameMoveForm" class="move-form">
+          <input id="gameMoveInput" type="text" autocomplete="off" spellcheck="false"
+                 placeholder="es. e2 e4 · kf3 · arrocca corto" aria-label="Scrivi la tua mossa" />
+          <button class="btn" type="submit">Invia</button>
+        </form>
+
+        <div class="game-panel__actions">
+          <button id="gamePauseBtn" class="btn" type="button" aria-pressed="false">⏸ Pausa</button>
+          <button id="gameResignBtn" class="btn" type="button">🏳 Abbandona</button>
+          <button id="gameManualBtn" class="btn" type="button">📖 Notazione</button>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
       <span>BlindChess — progetto open source. Motore: Stockfish 17.1 (GPLv3) · Mosse: chess.js (BSD-3-Clause).</span>
     </footer>
   </div>
+
+  <dialog id="manualDialog" class="manual-dialog">
+    <div class="manual-dialog__head">
+      <h2>📖 Manuale della notazione</h2>
+      <button id="closeManualBtn" class="icon-btn" type="button" aria-label="Chiudi manuale">✖</button>
+    </div>
+    <div class="manual-dialog__body">
+      <p>Qui trovi tutti i modi per dire o scrivere una mossa. L'app controlla sempre che la mossa sia legale: se sbagli, te lo dice; se è ambigua, ti chiede la casella di partenza.</p>
+
+      <h3>Le caselle</h3>
+      <p>Le colonne vanno da <strong>a</strong> a <strong>h</strong>, le righe da <strong>1</strong> a <strong>8</strong>. La forma più semplice è <code>partenza + arrivo</code>: <code>e2 e4</code>, <code>e2e4</code>, <code>g1f3</code>.</p>
+
+      <h3>Le lettere dei pezzi</h3>
+      <table class="manual-table">
+        <thead><tr><th>Pezzo</th><th>Italiano</th><th>Inglese</th><th>Esempio</th></tr></thead>
+        <tbody>
+          <tr><td>Pedone</td><td>nessuna lettera</td><td>nessuna lettera</td><td><code>e4</code></td></tr>
+          <tr><td>Cavallo</td><td><code>C</code></td><td><code>N</code> — accettiamo anche <strong>k</strong></td><td><code>Cf3</code>, <code>Nf3</code>, <code>kf3</code></td></tr>
+          <tr><td>Alfiere</td><td><code>A</code></td><td><code>B</code></td><td><code>Ac4</code>, <code>Bc4</code></td></tr>
+          <tr><td>Torre</td><td><code>T</code></td><td><code>R</code></td><td><code>Ta1</code>, <code>Ra1</code></td></tr>
+          <tr><td>Regina / Donna</td><td><code>D</code></td><td><code>Q</code></td><td><code>Dh5</code>, <code>Qh5</code></td></tr>
+          <tr><td>Re</td><td><code>R</code></td><td><code>K</code></td><td><code>Re1</code>, <code>Ke1</code></td></tr>
+        </tbody>
+      </table>
+      <p class="manual-note"><strong>k</strong> è una scorciatoia per <em>knight</em> (cavallo), non per il re: <code>kf3</code> porta il cavallo in f3. Se anche il re potesse andare in f3, l'app ti chiederà di precisare il pezzo o la casella di partenza.</p>
+
+      <h3>Catturare</h3>
+      <p>Si usa <code>x</code> oppure le parole <em>prende</em> / <em>takes</em>: <code>Cxe5</code>, <code>cavallo prende e5</code>, <code>knight takes e5</code>.</p>
+
+      <h3>Arrocco</h3>
+      <p>Corto: <code>O-O</code>, <code>0-0</code>, <code>arrocca corto</code>, <code>castle short</code>. Lungo: <code>O-O-O</code>, <code>0-0-0</code>, <code>arrocca lungo</code>, <code>castle long</code>.</p>
+
+      <h3>Promozione</h3>
+      <p><code>e7 e8 D</code>, <code>e8=Q</code>, <code>promuovi regina</code>, <code>promote queen</code>. Se clicchi sulla scacchiera, la promozione è automatica a regina.</p>
+
+      <h3>Quando due pezzi possono fare la stessa mossa</h3>
+      <p>Aggiungi la casella di partenza o solo la lettera della colonna: <code>cavallo da b1 a c3</code>, <code>Cb1c3</code>, <code>Cbc3</code>, <code>knight b1 f3</code>.</p>
+
+      <h3>Allo specchio / a voce</h3>
+      <p>Puoi parlare in italiano o in inglese: <em>«e2 e4»</em>, <em>«cavallo f3»</em>, <em>«knight f3»</em>, <em>«k f3»</em>, <em>«arrocca corto»</em>. I segni <code>+</code> (scacco) e <code>#</code> (matto) sono opzionali.</p>
+    </div>
+  </dialog>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script type="module" src="app.js"></script>

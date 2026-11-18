@@ -17,8 +17,17 @@ const PIECE_NAME = {
   en: { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen', k: 'king' },
 };
 
-// Lettera iniziale della notazione italiana (C=cavallo, A=alfiere, D=regina, R=re, T=torre).
-const IT_LETTER = { p: 'p', n: 'c', b: 'a', r: 't', q: 'd', k: 'r' };
+// Iniziali dei pezzi nelle principali notazioni. Il parser accetta sempre la
+// forma "<lettera><casella>" (kf3, Cf3, Nf3, sf3, dh5, ta1, ...): non ci sono
+// comandi speciali, è una regola generale applicata a ogni mossa legale.
+const PIECE_LETTERS = {
+  p: ['p'],
+  n: ['n', 'c', 'k', 's'], // knight / cavallo / knight / Springer
+  b: ['b', 'a', 'f'],     // bishop / alfiere / fou
+  r: ['r', 't'],          // rook / torre
+  q: ['q', 'd'],          // queen / donna
+  k: ['k', 'r'],          // king / re
+};
 
 const CAPTURE_WORDS = ['', 'x', 'prende', 'mangia', 'cattura', 'takes', 'capture'];
 
@@ -56,9 +65,7 @@ export function aliasesForMove(m) {
 
   const promo = m.promotion ? m.promotion.toLowerCase() : '';
   const pieces = new Set([
-    m.piece,
-    m.piece.toUpperCase(),
-    IT_LETTER[m.piece],
+    ...(PIECE_LETTERS[m.piece] || []),
     PIECE_NAME.it[m.piece],
     PIECE_NAME.en[m.piece],
   ].filter(Boolean));

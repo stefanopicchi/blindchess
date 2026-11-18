@@ -13,6 +13,7 @@ export const DEFAULT_SETTINGS = {
   speakUserMove: true,
   continuous: false,
   theme: 'light',
+  gameMode: false,
 };
 
 export const DEFAULT_STATS = { games: 0, wins: 0, draws: 0, losses: 0 };
