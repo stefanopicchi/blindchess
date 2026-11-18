@@ -20,6 +20,7 @@ const el = {
   boardToggle: $('boardToggle'),
   piecesToggle: $('piecesToggle'),
   board: $('board'),
+  boardWrap: $('boardWrap'),
   boardVeil: $('boardVeil'),
   boardHint: $('boardHint'),
   turnStatus: $('turnStatus'),
@@ -185,7 +186,7 @@ function render() {
     interactive,
   });
 
-  el.boardVeil.classList.toggle('is-hidden', !settings.showBoard);
+  el.boardWrap.classList.toggle('is-hidden', !settings.showBoard);
 
   el.boardToggle.setAttribute('aria-pressed', String(settings.showBoard));
   el.boardToggle.textContent = settings.showBoard ? '👁 Scacchiera: visibile' : '👁 Scacchiera: nascosta';
