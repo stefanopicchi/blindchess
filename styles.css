@@ -152,6 +152,9 @@ input[type="range"] { accent-color: var(--accent); cursor: pointer; margin: 6px 
   background: var(--surface); color: var(--muted); padding: 7px 13px;
 }
 .chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.chip:disabled { opacity: .5; cursor: not-allowed; }
+.btn--paused { background: var(--warn); border-color: var(--warn); color: #fff; }
+.btn--paused:hover { background: var(--warn); border-color: var(--warn); }
 
 .board-wrap { position: relative; width: 100%; aspect-ratio: 1 / 1; }
 .board {

@@ -39,6 +39,8 @@ const el = {
   confirmChk: $('confirmChk'),
   undoBtn: $('undoBtn'),
   hintBtn: $('hintBtn'),
+  pauseBtn: $('pauseBtn'),
+  resignBtn: $('resignBtn'),
   pgnBtn: $('pgnBtn'),
   moveList: $('moveList'),
   stats: $('stats'),
@@ -64,6 +66,11 @@ let hintBusy = false;
 let gameOver = false;
 let gameOverMessage = '';
 let generation = 0;
+let paused = false;
+let pausedDuringThinking = false;
+let resigned = false;
+let resignPending = false;
+let resignTimer = null;
 
 let clocks = { w: 0, b: 0 };
 let elapsed = { w: 0, b: 0 };
@@ -100,7 +107,7 @@ function formatTime(seconds) {
 }
 
 function canInteract() {
-  return !gameOver && !thinking && !hintBusy && game.turn() === settings.color;
+  return !paused && !gameOver && !thinking && !hintBusy && game.turn() === settings.color;
 }
 
 function speak(text, lang = 'it-IT') {
@@ -176,26 +183,33 @@ function renderStats() {
 }
 
 function render() {
-  const interactive = canInteract() && settings.showBoard;
+  const boardVisible = settings.showBoard && !paused;
   board.render({
     game,
     orientation: settings.color,
-    showPieces: settings.showPieces,
-    selected,
-    targets,
+    showPieces: settings.showPieces && !paused,
+    selected: paused ? null : selected,
+    targets: paused ? [] : targets,
     lastMove,
-    interactive,
+    interactive: canInteract() && boardVisible,
   });
 
-  el.boardWrap.classList.toggle('is-hidden', !settings.showBoard);
+  el.boardWrap.classList.toggle('is-hidden', !boardVisible);
 
-  el.boardToggle.setAttribute('aria-pressed', String(settings.showBoard));
-  el.boardToggle.textContent = settings.showBoard ? '👁 Scacchiera: visibile' : '👁 Scacchiera: nascosta';
-  el.piecesToggle.setAttribute('aria-pressed', String(settings.showPieces));
-  el.piecesToggle.textContent = settings.showPieces ? '♟ Pezzi: visibili' : '♟ Pezzi: nascosti';
+  el.boardToggle.disabled = paused || gameOver;
+  el.piecesToggle.disabled = paused || gameOver;
+  el.boardToggle.setAttribute('aria-pressed', String(boardVisible));
+  el.boardToggle.textContent = paused
+    ? '🔒 Scacchiera: bloccata'
+    : (settings.showBoard ? '👁 Scacchiera: visibile' : '👁 Scacchiera: nascosta');
+  el.piecesToggle.setAttribute('aria-pressed', String(settings.showPieces && !paused));
+  el.piecesToggle.textContent = paused
+    ? '♟ Pezzi: nascosti (pausa)'
+    : (settings.showPieces ? '♟ Pezzi: visibili' : '♟ Pezzi: nascosti');
 
   let status;
-  if (gameOver) status = gameOverMessage;
+  if (paused) status = '⏸ Partita in pausa — la scacchiera è nascosta.';
+  else if (gameOver) status = gameOverMessage;
   else if (thinking) status = 'Il bot sta pensando…';
   else if (hintBusy) status = 'Cerco un suggerimento…';
   else if (game.turn() === settings.color) status = `Tocca a te (${playerName()}).`;
@@ -204,14 +218,22 @@ function render() {
   el.turnStatus.className = `status${gameOver ? (status.includes('vinto') || status.includes('Hai') ? ' is-ok' : '') : ''}`;
 
   el.botMove.textContent = botSan ? `${botSan} — ${botPhrase}` : '—';
-  el.repeatBtn.disabled = !botPhrase;
+  el.repeatBtn.disabled = !botPhrase || paused;
 
   el.moveInput.disabled = !canInteract();
   el.micBtn.disabled = !canInteract();
-  el.undoBtn.disabled = game.history().length === 0;
+  el.undoBtn.disabled = paused || game.history().length === 0;
   el.hintBtn.disabled = !canInteract();
+  el.pauseBtn.disabled = gameOver;
+  el.pauseBtn.innerHTML = paused
+    ? '▶ Riprendi <span class="key">spazio</span>'
+    : '⏸ Pausa <span class="key">spazio</span>';
+  el.pauseBtn.classList.toggle('btn--paused', paused);
+  el.pauseBtn.setAttribute('aria-pressed', String(paused));
+  el.resignBtn.disabled = gameOver;
 
-  if (!settings.showBoard) el.boardHint.textContent = 'Scacchiera nascosta: ascolta le mosse del bot e ricorda la posizione.';
+  if (paused) el.boardHint.textContent = 'Partita in pausa: cronometro fermo e scacchiera nascosta.';
+  else if (!settings.showBoard) el.boardHint.textContent = 'Scacchiera nascosta: ascolta le mosse del bot e ricorda la posizione.';
   else if (selected) el.boardHint.textContent = 'Ora clicca la casella di destinazione.';
   else if (canInteract()) el.boardHint.textContent = 'Clicca una casella per selezionare il pezzo, poi la destinazione.';
   else el.boardHint.textContent = 'Attendi la mossa del bot…';
@@ -230,6 +252,10 @@ function newGame({ announce = true } = {}) {
   hintBusy = false;
   gameOver = false;
   gameOverMessage = '';
+  paused = false;
+  pausedDuringThinking = false;
+  resigned = false;
+  resetResign();
   selected = null;
   targets = [];
   lastMove = null;
@@ -413,11 +439,65 @@ function onSquareClick(square) {
   }
 }
 
+function resetResign() {
+  resignPending = false;
+  window.clearTimeout(resignTimer);
+  el.resignBtn.innerHTML = '🏳 Abbandona <span class="key">x</span>';
+}
+
+function togglePause() {
+  if (gameOver) return;
+
+  paused = !paused;
+  if (paused) {
+    pausedDuringThinking = thinking;
+    if (thinking || hintBusy) {
+      generation += 1;
+      engine?.stop();
+      thinking = false;
+      hintBusy = false;
+    }
+    voice?.stop();
+    voice?.stopSpeaking();
+    resetResign();
+    toast('Partita in pausa: scacchiera nascosta e cronometro fermo.');
+  } else {
+    toast('Partita ripresa.');
+  }
+
+  lastTick = Date.now();
+  render();
+
+  if (!paused && pausedDuringThinking && !gameOver && game.turn() !== settings.color) {
+    pausedDuringThinking = false;
+    askBot();
+  } else if (!paused) {
+    pausedDuringThinking = false;
+  }
+}
+
+function resign() {
+  if (gameOver) return;
+  if (!resignPending) {
+    resignPending = true;
+    el.resignBtn.textContent = '⚠ Conferma abbandono';
+    toast('Clicca di nuovo per confermare l’abbandono.');
+    resignTimer = window.setTimeout(resetResign, 5000);
+    return;
+  }
+  resetResign();
+  resigned = true;
+  endGame('resign', settings.color);
+}
+
 function endGame(reason, losingSide) {
   if (gameOver) return;
   gameOver = true;
   thinking = false;
   hintBusy = false;
+  paused = false;
+  pausedDuringThinking = false;
+  resetResign();
   generation += 1;
   engine?.stop();
   selected = null;
@@ -426,7 +506,7 @@ function endGame(reason, losingSide) {
   let winner;
   let draw = false;
 
-  if (reason === 'timeout') {
+  if (reason === 'timeout' || reason === 'resign') {
     winner = losingSide === 'w' ? 'b' : 'w';
   } else if (game.isCheckmate()) {
     winner = game.turn() === 'w' ? 'b' : 'w';
@@ -443,7 +523,9 @@ function endGame(reason, losingSide) {
     message = reason === 'timeout' ? 'Tempo scaduto al bot: hai vinto!' : 'Scacco matto! Hai vinto.';
     stats.wins += 1;
   } else {
-    message = reason === 'timeout' ? 'Tempo scaduto: hai perso.' : 'Scacco matto. Ha vinto il bot.';
+    message = reason === 'resign'
+      ? 'Hai abbandonato la partita. Ha vinto il bot.'
+      : reason === 'timeout' ? 'Tempo scaduto: hai perso.' : 'Scacco matto. Ha vinto il bot.';
     stats.losses += 1;
   }
   stats.games += 1;
@@ -528,9 +610,11 @@ async function hint() {
 
 function downloadPgn() {
   const history = game.history();
-  const result = game.isCheckmate()
-    ? (game.turn() === 'w' ? '0-1' : '1-0')
-    : game.isDraw() ? '1/2-1/2' : '*';
+  const result = resigned
+    ? (settings.color === 'w' ? '0-1' : '1-0')
+    : game.isCheckmate()
+      ? (game.turn() === 'w' ? '0-1' : '1-0')
+      : game.isDraw() ? '1/2-1/2' : '*';
 
   const white = settings.color === 'w' ? 'Giocatore' : `Bot (${settings.elo} ELO)`;
   const black = settings.color === 'b' ? 'Giocatore' : `Bot (${settings.elo} ELO)`;
@@ -755,6 +839,8 @@ function init() {
   });
   el.undoBtn.addEventListener('click', undo);
   el.hintBtn.addEventListener('click', hint);
+  el.pauseBtn.addEventListener('click', togglePause);
+  el.resignBtn.addEventListener('click', resign);
   el.pgnBtn.addEventListener('click', downloadPgn);
   el.resetStatsBtn.addEventListener('click', () => {
     stats = { games: 0, wins: 0, draws: 0, losses: 0 };
@@ -773,7 +859,13 @@ function init() {
       return;
     }
 
+    if (event.key === ' ' && target instanceof HTMLButtonElement) return;
+    if (event.key === ' ') { event.preventDefault(); togglePause(); return; }
+
     const key = event.key.toLowerCase();
+    if (key === 'x') { event.preventDefault(); resign(); return; }
+    if (paused) return;
+
     if (key === 'm') { event.preventDefault(); voice.toggle(); }
     else if (key === 'u') { event.preventDefault(); undo(); }
     else if (key === 'h') { event.preventDefault(); hint(); }
@@ -791,7 +883,7 @@ function clockTick() {
   const delta = (now - lastTick) / 1000;
   lastTick = now;
 
-  if (gameOver || game.history().length === 0) return;
+  if (paused || gameOver || game.history().length === 0) return;
   const side = game.turn();
 
   if (timeLimit() > 0) {

@@ -1,5 +1,7 @@
 /* BlindChess service worker: rende l'app installabile e disponibile offline. */
-const CACHE_NAME = 'blindchess-v1';
+// Aggiorna il numero di versione a ogni modifica dell'app: così i dispositivi
+// che hanno già installato la PWA scaricano i file nuovi invece della vecchia cache.
+const CACHE_NAME = 'blindchess-v2';
 
 const CORE_ASSETS = [
   './',

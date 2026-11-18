@@ -102,6 +102,8 @@
           <span><kbd>B</kbd> scacchiera</span>
           <span><kbd>P</kbd> pezzi</span>
           <span><kbd>N</kbd> nuova partita</span>
+          <span><kbd>Spazio</kbd> pausa</span>
+          <span><kbd>X</kbd> abbandona</span>
           <span><kbd>Invio</kbd> invia mossa</span>
         </div>
       </section>
@@ -150,6 +152,8 @@
         <section class="card actions-card">
           <button id="undoBtn" class="btn" type="button">↩ Annulla <span class="key">u</span></button>
           <button id="hintBtn" class="btn" type="button">💡 Suggerimento <span class="key">h</span></button>
+          <button id="pauseBtn" class="btn" type="button" aria-pressed="false">⏸ Pausa <span class="key">spazio</span></button>
+          <button id="resignBtn" class="btn" type="button">🏳 Abbandona <span class="key">x</span></button>
           <button id="pgnBtn" class="btn" type="button">⬇ Scarica PGN</button>
         </section>
 
@@ -178,6 +182,7 @@
                 <li>Promozione: <em>«e7 e8 regina»</em>, <em>«promote queen»</em></li>
               </ul>
               <p>Se la mossa è ambigua, l'app ti chiederà di ripeterla indicando la casella di partenza. Il microfono richiede il permesso del browser e funziona meglio in Chrome/Edge.</p>
+              <p>Con <strong>Pausa</strong> (o <kbd>Spazio</kbd>) il cronometro si ferma, la scacchiera viene nascosta e non puoi giocare finché non riprendi. Con <strong>Abbandona</strong> (o <kbd>X</kbd>) cedi la partita: serve un doppio clic per confermare.</p>
             </div>
           </details>
         </section>
