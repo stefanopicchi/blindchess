@@ -10,6 +10,7 @@ const $ = (id) => document.getElementById(id);
 
 const el = {
   engineStatus: $('engineStatus'),
+  installBtn: $('installBtn'),
   themeBtn: $('themeBtn'),
   eloRange: $('eloRange'),
   eloValue: $('eloValue'),
@@ -596,9 +597,70 @@ function applySettingsToUI() {
   el.confirmChk.checked = !!settings.speakUserMove;
 }
 
+/* ------------------------------ PWA / installazione ------------------------------ */
+
+function setupPwa() {
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+  const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  // Le anteprime dei social richiedono URL assoluti: li calcoliamo dal link corrente.
+  for (const selector of ['meta[property="og:image"]', 'meta[name="twitter:image"]']) {
+    const meta = document.querySelector(selector);
+    if (meta) meta.content = new URL('assets/cover.png', window.location.href).href;
+  }
+
+  let deferredPrompt = null;
+
+  if (!standalone) {
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      deferredPrompt = event;
+      el.installBtn.hidden = false;
+    });
+
+    // Safari iOS non genera beforeinstallprompt: mostriamo comunque il pulsante guida.
+    if (isIOS) el.installBtn.hidden = false;
+  }
+
+  el.installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      el.installBtn.hidden = true;
+      if (choice && choice.outcome === 'accepted') {
+        toast('BlindChess installata!', 'ok');
+        speak('App installata.');
+      }
+      return;
+    }
+
+    if (isIOS) {
+      toast('Su iPhone/iPad: tocca Condividi ⬆️ → "Aggiungi a schermata Home".');
+    } else {
+      toast('Apri il menu del browser → "Installa app" oppure "Aggiungi a schermata Home".');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    el.installBtn.hidden = true;
+    toast('BlindChess installata!', 'ok');
+  });
+
+  if ('serviceWorker' in navigator) {
+    const register = () => {
+      navigator.serviceWorker.register('./sw.js')
+        .catch((error) => console.warn('Service worker non registrato:', error));
+    };
+    if (document.readyState === 'complete') register();
+    else window.addEventListener('load', register);
+  }
+}
+
 /* ------------------------------ Inizializzazione ------------------------------ */
 
 function init() {
+  setupPwa();
   board = new BoardView(el.board, onSquareClick);
   voice = new Voice();
   voice.setLang(recognitionLang());

@@ -19,6 +19,8 @@ La scacchiera parte **nascosta**: l'obiettivo è allenare la memoria e il calcol
   - se una mossa è ambigua, l'app ti chiede di indicare la casella di partenza.
 - **Bot a voce**: la mossa del bot viene mostrata e pronunciata in italiano, ad es. *«Il bot gioca Cavallo prende f3, scacco.»*
 - **Scacchiera**: nascosta di default; pulsanti separati per mostrare la scacchiera e per mostrare i pezzi.
+- **PWA installabile**: icona, splash, modalità standalone e funzionamento offline (service worker). Su mobile compare il pulsante **📲 Installa app**; su iPhone/iPad fornisce le istruzioni per "Aggiungi a schermata Home".
+- **Copertina del link**: immagine Open Graph / Twitter Card (`assets/cover.png`) per l'anteprima nei social e nelle chat.
 - **Extra**: annulla mossa, suggerimento (motore a forza piena), storico, cronometro (anche con tempo limite), conferma vocale della tua mossa, download PGN, tema scuro, statistiche salvate nel browser.
 - **Scorciatoie**: `M` microfono · `U` annulla · `H` suggerimento · `B` scacchiera · `P` pezzi · `N` nuova partita · `Esc` deseleziona · `Invio` invia la mossa scritta.
 
@@ -63,6 +65,18 @@ npx serve .
 Poi visita <http://localhost:8000>.
 
 Consigli: usa **Chrome** o **Edge** per il riconoscimento vocale (Web Speech API). La prima volta il browser chiederà il permesso di usare il microfono.
+
+## Installazione su mobile (PWA)
+
+Una volta pubblicato il link HTTPS (Cloudflare Pages o GitHub Pages):
+
+1. Apri il link sul telefono.
+2. Compare il pulsante **📲 Installa app** in alto (Android/Chrome) oppure usa **Condividi → Aggiungi a schermata Home** su iPhone/iPad.
+3. L'app si apre a schermata piena, con la sua icona, e funziona anche offline: il service worker (`sw.js`) mette in cache l'intera app, Stockfish compreso (~7 MB).
+
+Le grafiche sono in `assets/`: `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` e `cover.png` (1200×630).
+
+> Nota: per un'anteprima perfetta sui social, sostituisci in `index.html` i valori di `og:image` / `twitter:image` con l'URL assoluto definitivo del tuo dominio. L'app li aggiorna automaticamente in base al link aperto, ma i crawler dei social non eseguono JavaScript.
 
 ## Pubblicazione su GitHub + Cloudflare Pages
 

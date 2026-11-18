@@ -39,6 +39,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 html { color-scheme: light; }
 [data-theme="dark"] { color-scheme: dark; }
@@ -68,7 +69,9 @@ body {
 }
 .brand h1 { margin: 0; font-size: 1.55rem; letter-spacing: -0.02em; }
 .brand p { margin: 2px 0 0; color: var(--muted); font-size: 0.9rem; }
-.topbar__actions { display: flex; align-items: center; gap: 10px; }
+.topbar__actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+.btn--install { white-space: nowrap; padding: 8px 12px; font-size: .82rem; background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+.btn--install:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
 .badge {
   font-size: 0.78rem; font-weight: 600; padding: 6px 11px; border-radius: 999px;

@@ -5,6 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Allenati a giocare a scacchi senza guardare la scacchiera: gioca contro un bot con livello ELO selezionabile, detta le mosse a voce o con la tastiera." />
   <title>BlindChess — gioca a scacchi senza guardare</title>
+
+  <!-- PWA / installazione su mobile -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#2f6b4f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="BlindChess" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icon-192.png" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+
+  <!-- Anteprima del link (copertina) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="BlindChess — Scacchi senza guardare" />
+  <meta property="og:description" content="Allenati a giocare a scacchi senza guardare la scacchiera. Bot Stockfish, mosse a voce e PWA installabile." />
+  <meta property="og:image" content="./assets/cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BlindChess — Scacchi senza guardare" />
+  <meta name="twitter:description" content="Allenati a giocare a scacchi senza guardare la scacchiera." />
+  <meta name="twitter:image" content="./assets/cover.png" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -18,6 +39,7 @@
         </div>
       </div>
       <div class="topbar__actions">
+        <button id="installBtn" class="btn btn--install" type="button" hidden>📲 Installa app</button>
         <span id="engineStatus" class="badge badge--loading" role="status">Caricamento motore…</span>
         <button id="themeBtn" class="icon-btn" type="button" title="Cambia tema (tasto t)" aria-label="Cambia tema">🌙</button>
       </div>
