@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Allenati a giocare a scacchi senza guardare la scacchiera: gioca contro un bot con livello ELO selezionabile, detta le mosse a voce o con la tastiera." />
+  <title>BlindChess — gioca a scacchi senza guardare</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__icon" aria-hidden="true">♞</span>
+        <div>
+          <h1>BlindChess</h1>
+          <p>Impara a giocare a scacchi senza guardare la scacchiera</p>
+        </div>
+      </div>
+      <div class="topbar__actions">
+        <span id="engineStatus" class="badge badge--loading" role="status">Caricamento motore…</span>
+        <button id="themeBtn" class="icon-btn" type="button" title="Cambia tema (tasto t)" aria-label="Cambia tema">🌙</button>
+      </div>
+    </header>
+
+    <section class="setup" aria-label="Impostazioni della partita">
+      <div class="setup__group">
+        <label for="eloRange">Livello del bot <output id="eloValue" for="eloRange">800</output> ELO</label>
+        <input id="eloRange" type="range" min="400" max="2000" step="50" value="800" />
+        <div class="range-labels"><span>Principiante</span><span>Esperto</span></div>
+      </div>
+      <div class="setup__group">
+        <label for="colorSelect">Tu giochi</label>
+        <select id="colorSelect">
+          <option value="w">Bianco (muovi per primo)</option>
+          <option value="b">Nero (muove il bot)</option>
+        </select>
+      </div>
+      <div class="setup__group">
+        <label for="clockSelect">Tempo</label>
+        <select id="clockSelect">
+          <option value="0">Nessun limite</option>
+          <option value="180">3 minuti a testa</option>
+          <option value="300">5 minuti a testa</option>
+          <option value="600">10 minuti a testa</option>
+        </select>
+      </div>
+      <div class="setup__group">
+        <label for="voiceLangSelect">Lingua della voce</label>
+        <select id="voiceLangSelect">
+          <option value="auto">Auto (italiano → inglese)</option>
+          <option value="it">Italiano</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <button id="newGameBtn" class="btn btn--primary" type="button">♟ Nuova partita</button>
+    </section>
+
+    <main class="layout">
+      <section class="board-panel" aria-label="Scacchiera">
+        <div class="board-toolbar">
+          <button id="boardToggle" class="chip" type="button" aria-pressed="false">👁 Scacchiera: nascosta</button>
+          <button id="piecesToggle" class="chip" type="button" aria-pressed="false">♟ Pezzi: nascosti</button>
+        </div>
+
+        <div id="boardWrap" class="board-wrap">
+          <div id="board" class="board" role="grid" aria-label="Scacchiera"></div>
+          <div id="boardVeil" class="board-veil">
+            <span class="board-veil__icon" aria-hidden="true">🙈</span>
+            <strong>Scacchiera nascosta</strong>
+            <span>Ascolta le mosse e tienile a mente. Puoi mostrarla con il pulsante qui sopra.</span>
+          </div>
+        </div>
+
+        <p id="boardHint" class="board-hint">Clicca una casella per selezionare il pezzo, poi la casella di destinazione.</p>
+        <div class="shortcuts" aria-label="Scorciatoie da tastiera">
+          <span><kbd>M</kbd> microfono</span>
+          <span><kbd>U</kbd> annulla</span>
+          <span><kbd>H</kbd> suggerimento</span>
+          <span><kbd>B</kbd> scacchiera</span>
+          <span><kbd>P</kbd> pezzi</span>
+          <span><kbd>N</kbd> nuova partita</span>
+          <span><kbd>Invio</kbd> invia mossa</span>
+        </div>
+      </section>
+
+      <aside class="side">
+        <section class="card">
+          <div class="card__title">Stato</div>
+          <p id="turnStatus" class="status" aria-live="polite">Pronto per iniziare.</p>
+          <div class="clocks">
+            <div class="clock">
+              <span class="clock__label">Tu (<span id="clockPlayerLabel">Bianco</span>)</span>
+              <strong id="clockPlayer">00:00</strong>
+            </div>
+            <div class="clock">
+              <span class="clock__label">Bot (<span id="clockBotLabel">Nero</span>)</span>
+              <strong id="clockBot">00:00</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card__title">Ultima mossa del bot</div>
+          <p id="botMove" class="bot-move" aria-live="polite">—</p>
+          <button id="repeatBtn" class="btn btn--small" type="button">🔊 Ripeti la mossa del bot</button>
+        </section>
+
+        <section class="card">
+          <div class="card__title">La tua mossa</div>
+          <button id="micBtn" class="btn btn--mic" type="button">🎤 Parla la mossa</button>
+          <label class="switch switch--block">
+            <input id="continuousChk" type="checkbox" />
+            <span>Ascolto continuo (microfono sempre attivo)</span>
+          </label>
+          <p id="heardText" class="heard" aria-live="polite">Il testo di ciò che dici apparirà qui.</p>
+          <form id="moveForm" class="move-form">
+            <input id="moveInput" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="es. e2 e4 · Cavallo f3 · Cf3 · arrocca corto" aria-label="Scrivi la tua mossa" />
+            <button class="btn" type="submit">Invia</button>
+          </form>
+          <label class="switch switch--block">
+            <input id="confirmChk" type="checkbox" checked />
+            <span>Ripeti la mia mossa a voce</span>
+          </label>
+        </section>
+
+        <section class="card actions-card">
+          <button id="undoBtn" class="btn" type="button">↩ Annulla <span class="key">u</span></button>
+          <button id="hintBtn" class="btn" type="button">💡 Suggerimento <span class="key">h</span></button>
+          <button id="pgnBtn" class="btn" type="button">⬇ Scarica PGN</button>
+        </section>
+
+        <section class="card">
+          <div class="card__title">Mosse giocate</div>
+          <ol id="moveList" class="move-list"><li class="empty">Nessuna mossa</li></ol>
+        </section>
+
+        <section class="card">
+          <div class="card__title">Statistiche</div>
+          <div id="stats" class="stats"></div>
+          <button id="resetStatsBtn" class="link-btn" type="button">Azzera statistiche</button>
+        </section>
+
+        <section class="card help-card">
+          <details>
+            <summary>Come funziona / comandi vocali</summary>
+            <div class="help-body">
+              <p>Sei sempre <strong>di bianco</strong> per impostazione predefinita (puoi cambiare colore). Il bot risponde a voce e per iscritto. La scacchiera parte nascosta: allenati a ricordare la posizione!</p>
+              <ul>
+                <li>Coordinate: <em>«e2 e4»</em>, <em>«e2e4»</em></li>
+                <li>Nome del pezzo: <em>«cavallo f3»</em>, <em>«knight f3»</em></li>
+                <li>Con origine: <em>«cavallo da g1 a f3»</em>, <em>«knight g1 f3»</em></li>
+                <li>Catture: <em>«cavallo prende f5»</em>, <em>«knight takes f5»</em></li>
+                <li>Arrocco: <em>«arrocca corto»</em>, <em>«arrocca lungo»</em>, <em>«castle short»</em></li>
+                <li>Promozione: <em>«e7 e8 regina»</em>, <em>«promote queen»</em></li>
+              </ul>
+              <p>Se la mossa è ambigua, l'app ti chiederà di ripeterla indicando la casella di partenza. Il microfono richiede il permesso del browser e funziona meglio in Chrome/Edge.</p>
+            </div>
+          </details>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <span>BlindChess — progetto open source. Motore: Stockfish 17.1 (GPLv3) · Mosse: chess.js (BSD-3-Clause).</span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
